@@ -1,16 +1,16 @@
 /*--------------------
 Vars
 --------------------*/
-let progress = 30
-let active = 0
+let progress = 30  // Cambio para empezar en la tercera foto
+let startX = 0
+let active = 2     // Índice 2 = tercera foto (contando desde 0)
+let isDown = false
 
-// Variables para el control táctil
-let touchStartX = 0
-let touchStartY = 0
-let touchEndX = 0
-let touchEndY = 0
-let isSwiping = false
-let swipeThreshold = 50 // Píxeles mínimos para considerar un swipe
+/*--------------------
+Constants
+--------------------*/
+const speedWheel = 0.05
+const speedDrag = -0.1
 
 /*--------------------
 Get Z
@@ -21,7 +21,7 @@ const getZindex = (array, index) =>
 /*--------------------
 Items
 --------------------*/
-const $items = document.querySelectorAll('.carousel-item')
+let $items = document.querySelectorAll('.carousel-item')
 
 const displayItems = (item, index, active) => {
   const zIndex = getZindex([...$items], active)[index]
@@ -37,18 +37,19 @@ const animate = () => {
   active = Math.floor((progress / 100) * ($items.length - 1))
   $items.forEach((item, index) => displayItems(item, index, active))
 }
-animate()
 
 /*--------------------
 Navigation Functions
 --------------------*/
 const goToNext = () => {
+  if (!$items || $items.length === 0) return
   const nextIndex = (active + 1) % $items.length
   progress = (nextIndex / $items.length) * 100 + 10
   animate()
 }
 
 const goToPrevious = () => {
+  if (!$items || $items.length === 0) return
   const prevIndex = active === 0 ? $items.length - 1 : active - 1
   progress = (prevIndex / $items.length) * 100 + 10
   animate()
@@ -57,87 +58,47 @@ const goToPrevious = () => {
 /*--------------------
 Click on Items
 --------------------*/
-$items.forEach((item, i) => {
-  item.addEventListener('click', (e) => {
-    // Solo navegar si no fue un swipe
-    if (!isSwiping) {
-      progress = (i / $items.length) * 100 + 10
-      animate()
-    }
+const addClickListeners = () => {
+  $items.forEach((item, i) => {
+    item.addEventListener('click', (e) => {
+      if (!isDown) { // Solo navegar si no fue un drag/swipe
+        progress = (i / $items.length) * 100 + 10
+        animate()
+      }
+    })
   })
-})
+}
 
 /*--------------------
-Touch Events for Swipe Functionality
+Handlers
 --------------------*/
-const carousel = document.querySelector('.carousel')
+const handleWheel = e => {
+  // Solo afectar al carrusel si el mouse está sobre él
+  const carousel = document.querySelector('.carousel:not(.hidden)')
+  if (carousel && carousel.matches(':hover')) {
+    e.preventDefault() // Prevenir el scroll de la página
+    const wheelProgress = e.deltaY * speedWheel
+    progress = progress + wheelProgress
+    animate()
+  }
+}
 
-if (carousel) {
-  // Detectar el inicio del toque
-  carousel.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX
-    touchStartY = e.touches[0].clientY
-    isSwiping = false
-  }, { passive: true })
+const handleMouseMove = (e) => {
+  if (!isDown) return
+  const x = e.clientX || (e.touches && e.touches[0].clientX) || 0
+  const mouseProgress = (x - startX) * speedDrag
+  progress = progress + mouseProgress
+  startX = x
+  animate()
+}
 
-  // Detectar el movimiento del toque
-  carousel.addEventListener('touchmove', (e) => {
-    if (!touchStartX || !touchStartY) return
+const handleMouseDown = e => {
+  isDown = true
+  startX = e.clientX || (e.touches && e.touches[0].clientX) || 0
+}
 
-    touchEndX = e.touches[0].clientX
-    touchEndY = e.touches[0].clientY
-
-    const deltaX = Math.abs(touchEndX - touchStartX)
-    const deltaY = Math.abs(touchEndY - touchStartY)
-
-    // Si el movimiento horizontal es mayor que el vertical, es un swipe
-    if (deltaX > deltaY && deltaX > 10) {
-      isSwiping = true
-      // Prevenir el scroll de la página durante el swipe horizontal
-      e.preventDefault()
-    }
-  }, { passive: false })
-
-  // Detectar el final del toque
-  carousel.addEventListener('touchend', (e) => {
-    if (!touchStartX || !touchStartY) return
-
-    const deltaX = touchEndX - touchStartX
-    const deltaY = Math.abs(touchEndY - touchStartY)
-
-    // Solo procesar swipe si el movimiento horizontal es significativo
-    if (Math.abs(deltaX) > swipeThreshold && Math.abs(deltaX) > deltaY) {
-      isSwiping = true
-      
-      if (deltaX > 0) {
-        // Swipe hacia la derecha - ir a la imagen anterior
-        goToPrevious()
-      } else {
-        // Swipe hacia la izquierda - ir a la siguiente imagen
-        goToNext()
-      }
-    }
-
-    // Resetear valores
-    touchStartX = 0
-    touchStartY = 0
-    touchEndX = 0
-    touchEndY = 0
-    
-    // Resetear isSwiping después de un pequeño delay para evitar clicks accidentales
-    setTimeout(() => {
-      isSwiping = false
-    }, 100)
-  }, { passive: true })
-
-  // Manejar cuando se cancela el toque
-  carousel.addEventListener('touchcancel', () => {
-    touchStartX = 0
-    touchStartY = 0
-    touchEndX = 0
-    touchEndY = 0
-    isSwiping = false
-  }, { passive: true })
+const handleMouseUp = () => {
+  isDown = false
 }
 
 /*--------------------
@@ -168,7 +129,6 @@ if (navLogo && header) {
   const handleScroll = () => {
     const scrollY = window.scrollY;
     
-    // Mostrar logo cuando se haya scrolleado más allá del header
     if (scrollY > headerHeight) {
       navLogo.classList.add('show');
     } else {
@@ -176,15 +136,134 @@ if (navLogo && header) {
     }
   };
 
-  // Ejecutar al cargar la página
   handleScroll();
-  
-  // Ejecutar al hacer scroll
   window.addEventListener('scroll', handleScroll);
   
-  // Recalcular altura del header si cambia el tamaño de ventana
   window.addEventListener('resize', () => {
     headerHeight = header.offsetHeight;
     handleScroll();
   });
 }
+
+/*--------------------
+Tab Functionality
+--------------------*/
+const tabButtons = document.querySelectorAll('.tab-button')
+const carousels = document.querySelectorAll('.carousel')
+
+// Variables para manejar cada carrusel por separado
+let carouselStates = {
+  'novias': { progress: 30, active: 2, items: null },
+  'madrinas': { progress: 30, active: 2, items: null },
+  'invitadas': { progress: 30, active: 2, items: null }
+}
+
+// Función para mostrar/ocultar carruseles
+const showCarousel = (targetTab) => {
+  // Ocultar todos los carruseles
+  carousels.forEach(carousel => {
+    carousel.classList.add('hidden')
+  })
+  
+  // Mostrar el carrusel seleccionado
+  const targetCarousel = document.getElementById(`carousel-${targetTab}`)
+  if (targetCarousel) {
+    targetCarousel.classList.remove('hidden')
+    
+    // Actualizar variables globales para el carrusel activo
+    const state = carouselStates[targetTab]
+    if (!state.items) {
+      state.items = targetCarousel.querySelectorAll('.carousel-item')
+    }
+    
+    progress = state.progress
+    active = state.active
+    $items = state.items
+    
+    // Animar el carrusel activo
+    animate()
+    
+    // Remover listeners anteriores y agregar nuevos
+    removeEventListeners()
+    addEventListeners()
+    addClickListeners()
+  }
+}
+
+// Función para cambiar pestaña activa
+const setActiveTab = (activeButton) => {
+  tabButtons.forEach(button => {
+    button.classList.remove('active')
+  })
+  activeButton.classList.add('active')
+}
+
+// Event listeners para las pestañas
+tabButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const targetTab = button.getAttribute('data-tab')
+    
+    // Guardar estado del carrusel actual antes de cambiar
+    const currentActiveTab = document.querySelector('.tab-button.active')?.getAttribute('data-tab')
+    if (currentActiveTab && carouselStates[currentActiveTab]) {
+      carouselStates[currentActiveTab].progress = progress
+      carouselStates[currentActiveTab].active = active
+    }
+    
+    // Cambiar pestaña activa
+    setActiveTab(button)
+    
+    // Mostrar carrusel correspondiente
+    showCarousel(targetTab)
+  })
+})
+
+/*--------------------
+Event Listeners Management
+--------------------*/
+const addEventListeners = () => {
+  document.addEventListener('wheel', handleWheel, { passive: false })
+  document.addEventListener('mousedown', handleMouseDown)
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleMouseUp)
+  document.addEventListener('touchstart', handleMouseDown, { passive: true })
+  document.addEventListener('touchmove', handleMouseMove, { passive: false })
+  document.addEventListener('touchend', handleMouseUp, { passive: true })
+}
+
+const removeEventListeners = () => {
+  document.removeEventListener('wheel', handleWheel)
+  document.removeEventListener('mousedown', handleMouseDown)
+  document.removeEventListener('mousemove', handleMouseMove)
+  document.removeEventListener('mouseup', handleMouseUp)
+  document.removeEventListener('touchstart', handleMouseDown)
+  document.removeEventListener('touchmove', handleMouseMove)
+  document.removeEventListener('touchend', handleMouseUp)
+}
+
+/*--------------------
+Initialize
+--------------------*/
+document.addEventListener('DOMContentLoaded', () => {
+  // Inicializar items para cada carrusel
+  carouselStates.novias.items = document.querySelectorAll('#carousel-novias .carousel-item')
+  carouselStates.madrinas.items = document.querySelectorAll('#carousel-madrinas .carousel-item')
+  carouselStates.invitadas.items = document.querySelectorAll('#carousel-invitadas .carousel-item')
+  
+  // Inicializar con la primera pestaña
+  const firstTab = document.querySelector('.tab-button.active')
+  if (firstTab) {
+    const targetTab = firstTab.getAttribute('data-tab')
+    showCarousel(targetTab)
+  } else {
+    // Si no hay pestaña activa, activar la primera
+    if (tabButtons.length > 0) {
+      tabButtons[0].classList.add('active')
+      showCarousel(tabButtons[0].getAttribute('data-tab'))
+    }
+  }
+})
+
+// Exponer funciones globalmente si es necesario
+window.goToNext = goToNext
+window.goToPrevious = goToPrevious
