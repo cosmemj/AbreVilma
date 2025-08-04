@@ -175,10 +175,16 @@ section p {
 /* Carrusel profesional */
 .carousel-global {
   overflow: hidden;
-  margin: 40px 0;
-  background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);
-  border-radius: 20px;
+  position: relative;
+  margin: 40px 0 0 0;
   padding: 40px 0;
+  width: 100vw;
+  border-radius: 20px;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);
 }
 
 .carousel {
@@ -379,13 +385,12 @@ section p {
   background: rgba(255, 255, 255, 0.199);
   padding: 25px;
   border-radius: 15px;
-  /* text-align: center; */
-  margin-left: 50px;
+  text-align: center;
+  margin: 0 10px;
   z-index: 1;
 }
 
 .contact-info p {
-  margin: 10px 0;
   font-size: clamp(0.95rem, 2.2vw, 1.1rem);
 }
 
@@ -393,7 +398,6 @@ section p {
   background: #f8f9fa;
   padding: 40px;
   border-radius: 20px;
-  margin: 40px 0;
 }
 
 .contact-form-section h3 {
@@ -561,7 +565,7 @@ footer p {
   .carousel-item {
     --width: clamp(260px, 70vw, 360px);
     --height: clamp(340px, 85vw, 500px);
-    --x: calc(var(--active) * 240%);
+    --x: calc(var(--active) * 300%);
     --y: calc(var(--active) * 50%);
     --rot: calc(var(--active) * 20deg);
   }
@@ -591,7 +595,7 @@ footer p {
     padding: 20px 15px;
   }
 
-  .carousel {
+  /* .carousel {
     height: 55vh;
     min-height: 300px;
   }
@@ -602,7 +606,7 @@ footer p {
     --x: calc(var(--active) * 240%);
     --y: calc(var(--active) * 50%);
     --rot: calc(var(--active) * 20deg);
-  }
+  } */
 
   .title {
     font-size: clamp(14px, 3vw, 18px);
