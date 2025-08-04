@@ -595,19 +595,6 @@ footer p {
     padding: 20px 15px;
   }
 
-  /* .carousel {
-    height: 55vh;
-    min-height: 300px;
-  }
-
-  .carousel-item {
-    --width: clamp(260px, 70vw, 360px);
-    --height: clamp(340px, 85vw, 500px);
-    --x: calc(var(--active) * 240%);
-    --y: calc(var(--active) * 50%);
-    --rot: calc(var(--active) * 20deg);
-  } */
-
   .title {
     font-size: clamp(14px, 3vw, 18px);
     bottom: 15px;
