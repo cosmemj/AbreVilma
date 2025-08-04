@@ -65,6 +65,44 @@ nav {
   z-index: 100;
 }
 
+/* Logo en navegación */
+.nav-logo {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-100%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.nav-logo.show {
+  transform: translateY(-50%) translateX(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.nav-logo img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.521);
+}
+
+.nav-logo-text {
+  font-weight: 200;
+  letter-spacing: 1px;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
 nav a {
   color: white;
   text-decoration: none;
@@ -492,29 +530,43 @@ footer p {
 
 /* Media queries para móviles */
 @media (max-width: 768px) {
-  nav {
-    flex-direction: column;
-    position: static;
+
+  .nav-logo {
+    display: none;
   }
-  
+
+  nav {
+    display: flex;
+    flex-direction: row; /* Alineación en fila */
+    justify-content: space-around; /* Espaciado entre botones */
+    align-items: center;
+    font-size: 12px;
+    position: sticky;
+    padding: 10px 0px;
+    flex-wrap: wrap; /* Por si no caben todos en una línea */
+  }
+
   nav a {
-    padding: 15px 20px;
+    font-size: 12px;
     text-align: center;
+    flex: 1; /* Cada enlace ocupa el mismo espacio */
+    padding: 10px;
   }
 
   .carousel {
-    height: 60vh;
-    min-height: 350px;
+    height: 55vh;
+    min-height: 300px;
   }
 
   .carousel-item {
-    --width: clamp(180px, 40vw, 280px);
-    --height: clamp(250px, 55vw, 400px);
-    --x: calc(var(--active) * 300%);
-    --y: calc(var(--active) * 70%);
-    --rot: calc(var(--active) * 40deg);
+    --width: clamp(260px, 70vw, 360px);
+    --height: clamp(340px, 85vw, 500px);
+    --x: calc(var(--active) * 240%);
+    --y: calc(var(--active) * 50%);
+    --rot: calc(var(--active) * 20deg);
   }
 
+  
   section {
     padding: 40px 15px;
     margin: 0 10px;
@@ -540,16 +592,16 @@ footer p {
   }
 
   .carousel {
-    height: 50vh;
+    height: 55vh;
     min-height: 300px;
   }
 
   .carousel-item {
-    --width: clamp(160px, 45vw, 260px);
-    --height: clamp(220px, 60vw, 360px);
-    --x: calc(var(--active) * 200%);
+    --width: clamp(260px, 70vw, 360px);
+    --height: clamp(340px, 85vw, 500px);
+    --x: calc(var(--active) * 240%);
     --y: calc(var(--active) * 50%);
-    --rot: calc(var(--active) * 25deg);
+    --rot: calc(var(--active) * 20deg);
   }
 
   .title {

@@ -56,3 +56,55 @@ document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+
+/*--------------------
+Smooth scrolling for navigation
+--------------------*/
+document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+});
+
+/*--------------------
+Logo navigation scroll effect
+--------------------*/
+const navLogo = document.querySelector('.nav-logo');
+const header = document.querySelector('header');
+
+if (navLogo && header) {
+  let headerHeight = header.offsetHeight;
+  
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+    
+    // Mostrar logo cuando se haya scrolleado más allá del header
+    if (scrollY > headerHeight) {
+      navLogo.classList.add('show');
+    } else {
+      navLogo.classList.remove('show');
+    }
+  };
+
+  // Ejecutar al cargar la página
+  handleScroll();
+  
+  // Ejecutar al hacer scroll
+  window.addEventListener('scroll', handleScroll);
+  
+  // Recalcular altura del header si cambia el tamaño de ventana
+  window.addEventListener('resize', () => {
+    headerHeight = header.offsetHeight;
+    handleScroll();
+  });
+}
+
+
