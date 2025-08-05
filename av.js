@@ -268,31 +268,31 @@ document.addEventListener('DOMContentLoaded', () => {
 window.goToNext = goToNext
 window.goToPrevious = goToPrevious
 
-
 (function () {
   const form = document.getElementById("form-contacto");
-  const endpoint = "https://formsubmit.co/cosmemori@gmail.com";
+  const endpoint = "https://formsubmit.co/ajax/cosmemori@gmail.com";
 
   form.addEventListener("submit", function (e) {
-    e.preventDefault(); // Evita que recargue
+    e.preventDefault(); // No redirige
+
     const formData = new FormData(form);
 
     fetch(endpoint, {
       method: "POST",
       body: formData,
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json" }
     })
-      .then((response) => {
-        if (response.ok) {
-          form.reset();
-          mostrarToastGlass("¡Mensaje enviado con éxito!");
-        } else {
-          alert("Hubo un error al enviar el formulario.");
-        }
-      })
-      .catch(() => {
-        alert("No se pudo enviar. Verifica tu conexión o intenta más tarde.");
-      });
+    .then(response => {
+      if (response.ok) {
+        form.reset();
+        mostrarToastGlass("¡Mensaje enviado con éxito!");
+      } else {
+        mostrarToastGlass("Error al enviar el mensaje.");
+      }
+    })
+    .catch(() => {
+      mostrarToastGlass("No se pudo conectar.");
+    });
   });
 
   function mostrarToastGlass(mensaje) {
@@ -309,10 +309,10 @@ window.goToPrevious = goToPrevious
 
     container.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add("mostrar");
-    }, 100);
+    // Forzar animación
+    setTimeout(() => toast.classList.add("mostrar"), 100);
 
+    // Auto eliminar después de 5 segundos
     setTimeout(() => {
       toast.classList.remove("mostrar");
       setTimeout(() => toast.remove(), 500);
