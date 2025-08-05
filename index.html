@@ -281,11 +281,15 @@
     <h3>Cuéntanos tu Visión</h3>
     <p>¿Tienes una idea en mente? ¿Buscas inspiración para tu gran día? Comparte con nosotras tus sueños y preferencias. Nos encanta conocer cada detalle de tu historia para crear algo verdaderamente único.</p>
     
-    <form>
+    <form action="https://formsubmit.co/cosmemori@gmail.com" method="POST">
       <input type="text" name="nombre" placeholder="Tu nombre completo" required />
       <input type="email" name="email" placeholder="Tu correo electrónico" required />
       <input type="tel" name="telefono" placeholder="Tu número de teléfono" />
       <textarea name="mensaje" placeholder="Cuéntanos sobre tu evento, fecha prevista, estilo que buscas, inspiraciones... ¡Queremos conocer todos los detalles!" rows="6" required></textarea>
+
+      <input type="hidden" name="_captcha" value="false">
+      <!-- <input type="hidden" name="_next" value="https://cosmemj.github.io/gracias.html"> -->
+
       <button type="submit">Enviar Consulta</button>
     </form>
   </div>
