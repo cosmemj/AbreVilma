@@ -267,3 +267,55 @@ document.addEventListener('DOMContentLoaded', () => {
 // Exponer funciones globalmente si es necesario
 window.goToNext = goToNext
 window.goToPrevious = goToPrevious
+
+
+(function () {
+  const form = document.getElementById("form-contacto");
+  const endpoint = "https://formsubmit.co/cosmemori@gmail.com";
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); // Evita que recargue
+    const formData = new FormData(form);
+
+    fetch(endpoint, {
+      method: "POST",
+      body: formData,
+      headers: { Accept: "application/json" },
+    })
+      .then((response) => {
+        if (response.ok) {
+          form.reset();
+          mostrarToastGlass("¡Mensaje enviado con éxito!");
+        } else {
+          alert("Hubo un error al enviar el formulario.");
+        }
+      })
+      .catch(() => {
+        alert("No se pudo enviar. Verifica tu conexión o intenta más tarde.");
+      });
+  });
+
+  function mostrarToastGlass(mensaje) {
+    const container = document.getElementById("mi-toast-container");
+
+    const toast = document.createElement("div");
+    toast.className = "mi-toast-glass";
+
+    toast.innerHTML = `
+      <i class="fa-solid fa-arrow-up"></i>
+      <i class="fa-solid fa-wine-glass"></i>
+      <span>${mensaje}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add("mostrar");
+    }, 100);
+
+    setTimeout(() => {
+      toast.classList.remove("mostrar");
+      setTimeout(() => toast.remove(), 500);
+    }, 5000);
+  }
+})();
